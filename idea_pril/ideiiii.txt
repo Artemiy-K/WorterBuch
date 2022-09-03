@@ -11,3 +11,15 @@
 
 5. Вспомнить старые карточки
 	
+
+
+
+
+1) title1
+2) title2
+3)Example 1
+4)Example 2
+5)Example 3
+6)Photo
+7)Created_at
+8)Category
