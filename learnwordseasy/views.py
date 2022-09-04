@@ -1,5 +1,4 @@
 import random
-from random import randint
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Category, Words
@@ -16,16 +15,15 @@ def index(request):
 
 def start_test(request):
     words = Words.objects.all()
-    n = []
+    num_side = []
     s = []
     for word in words:
-        s.append(word)
+        s.append(word.title1)
         s.append(random.randint(1,2))
-        n.append(s)
+        num_side.append(s)
         s = []
-    rand_num = random.randint(1, len(n))
+    random.shuffle(num_side)
     return render(request, 'learnwordseasy/index2.html', {
         'words': words,
-        'rand_num': rand_num,
-        'n': n,
+        'num_side': num_side,
     })
