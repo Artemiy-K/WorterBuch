@@ -17,7 +17,7 @@ def index(request):
         'categories': categories,
     })
 
-
+"""
 def repeat(words):
     global col
     words = Words.objects.all()
@@ -28,13 +28,41 @@ def repeat(words):
         return
     else:
         choose_word(words)
+"""
+
+def random_num(list_word, true_answer):
+    r_n = []
+    q_transl = []
+
+    a = true_answer.values("title2")
+    a = a[0]
+    a = a["title2"]
+    q_transl.append(a)
+
+    for i in range(0, 3):
+        num = random.randint(0, len(list_word))
+        r_n.append(num)
+
+    for num in r_n:
+        if list_word[num] != a:
+            q_transl.append(list_word[num])
+
+    return q_transl
 
 
 def start_test(request):
     global col
-    a = 0
-    words = Words.objects.filter(for_test__in=[1,2])
+    list_of_translate = []
+    words = Words.objects.filter(for_test__in=[0,1,2])
 
+    translate = Words.objects.values('title2')
+    for i in range(0, len(translate)):
+        s = translate[i]
+        s = s["title2"]
+        list_of_translate.append(s)
+
+    for i in range(0, 2):
+        random.shuffle(list_of_translate)
     # news = News.objects.filter(category_id=category_id)
     # category = Category.objects.get(pk=category_id)
     num_side = random.randint(1, 2)
@@ -49,9 +77,10 @@ def start_test(request):
     get_first_of_word = word_id.first()
     get_for_test = get_first_of_word.for_test
 
+    rand_trans = random_num(list_of_translate, word_id)
+
     if int(get_for_test) == 0:
         word_id.update(for_test=1)
-
     elif int(get_for_test) == 1:
         word_id.update(for_test=2)
     elif int(get_for_test) == 3:
@@ -59,14 +88,11 @@ def start_test(request):
     elif int(get_for_test) == 2:
         word_id.update(for_test=3)
 
-
     return render(request, 'learnwordseasy/index2.html', {
         'num_side': num_side,
         'words': words,
         'word_id': word_id,
-
+        'translate': list_of_translate,
+        'rand_trans': rand_trans
 
     })
-
-
-
