@@ -10,6 +10,7 @@ class Words(models.Model):
     photo = models.ImageField(upload_to='photos/%Y/%m/%d/', verbose_name='Фото', blank=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     category = models.ForeignKey('Category', on_delete=models.PROTECT, null=True, verbose_name='Категория')
+    for_test = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title1
