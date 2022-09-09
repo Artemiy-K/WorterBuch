@@ -17,6 +17,7 @@ def index(request):
         'categories': categories,
     })
 
+
 """
 def repeat(words):
     global col
@@ -30,22 +31,57 @@ def repeat(words):
         choose_word(words)
 """
 
-def random_num(list_word, true_answer):
+
+def random_num2(list_word, true_answer):
+    r_n = []
+    q_transl = []
+
+    a = true_answer.values("title1")
+    a = a[0]
+    a = a["title1"]
+
+    list_word.remove(a)
+    q_transl.append(a)
+
+    len_list_word = len(list_word) - 1
+    while len(r_n) != 3:
+        num = random.randint(0, len_list_word)
+        if num not in r_n:
+            r_n.append(num)
+
+    for num in r_n:
+        q_transl.append(list_word[num])
+
+    for i in range(0, 5):
+        random.shuffle(q_transl)
+
+    return q_transl
+
+
+
+
+def random_num1(list_word, true_answer):
     r_n = []
     q_transl = []
 
     a = true_answer.values("title2")
     a = a[0]
     a = a["title2"]
+
+    list_word.remove(a)
     q_transl.append(a)
 
-    for i in range(0, 3):
-        num = random.randint(0, len(list_word))
-        r_n.append(num)
+    len_list_word = len(list_word) - 1
+    while len(r_n) != 3:
+        num = random.randint(0, len_list_word)
+        if num not in r_n:
+            r_n.append(num)
 
     for num in r_n:
-        if list_word[num] != a:
-            q_transl.append(list_word[num])
+        q_transl.append(list_word[num])
+
+    for i in range(0, 5):
+        random.shuffle(q_transl)
 
     return q_transl
 
@@ -53,7 +89,7 @@ def random_num(list_word, true_answer):
 def start_test(request):
     global col
     list_of_translate = []
-    words = Words.objects.filter(for_test__in=[0,1,2])
+    words = Words.objects.filter(for_test__in=[0, 1, 2])
 
     translate = Words.objects.values('title2')
     for i in range(0, len(translate)):
@@ -71,20 +107,24 @@ def start_test(request):
         list_of_words.append(word.title1)
 
     random.shuffle(list_of_words)
+
     q_word = list_of_words[0]
 
     word_id = Words.objects.filter(title1=q_word)
     get_first_of_word = word_id.first()
     get_for_test = get_first_of_word.for_test
 
-    rand_trans = random_num(list_of_translate, word_id)
+    # list_of_translate.remove(get_first_of_word.title2)
+    if num_side == 1:
+        rand_answer = random_num1(list_of_translate, word_id)
+    else:
+        rand_answer = random_num2(list_of_words, word_id)
+
 
     if int(get_for_test) == 0:
         word_id.update(for_test=1)
     elif int(get_for_test) == 1:
         word_id.update(for_test=2)
-    elif int(get_for_test) == 3:
-        return
     elif int(get_for_test) == 2:
         word_id.update(for_test=3)
 
@@ -92,7 +132,7 @@ def start_test(request):
         'num_side': num_side,
         'words': words,
         'word_id': word_id,
-        'translate': list_of_translate,
-        'rand_trans': rand_trans
+        # 'translate': list_of_translate,
+        'rand_answer': rand_answer
 
     })

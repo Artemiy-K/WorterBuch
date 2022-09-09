@@ -11,11 +11,22 @@
     <a href="/start_test/{{ item.id }}"><p>{{ item.title2 }}</p></a>
 {% endfor %}
 
-<h1>{{ word_id }}</h1>
-<h1>{{ num_side }}</h1>
-{{ translate }}
+{% for item in word_id %}
+    {% if num_side == 1 %}
+        <h1>{{ item.title1 }}</h1>
+    {% else %}
+        <h1>{{ item.title2 }}</h1>
+    {% endif %}
 
-<h4>{{ rand_trans }}</h4>
+
+
+{% endfor %}
+
+<h1>{{ num_side }}</h1>
+
+{% for item in rand_answer %}
+    {{ item }}
+{% endfor %}
 
 
 </body>
