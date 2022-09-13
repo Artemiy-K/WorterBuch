@@ -58,8 +58,6 @@ def random_num2(list_word, true_answer):
     return q_transl
 
 
-
-
 def random_num1(list_word, true_answer):
     r_n = []
     q_transl = []
@@ -120,7 +118,6 @@ def start_test(request):
     else:
         rand_answer = random_num2(list_of_words, word_id)
 
-
     if int(get_for_test) == 0:
         word_id.update(for_test=1)
     elif int(get_for_test) == 1:
@@ -133,6 +130,26 @@ def start_test(request):
         'words': words,
         'word_id': word_id,
         # 'translate': list_of_translate,
-        'rand_answer': rand_answer
+        'word1': rand_answer[0],
+        'word2': rand_answer[1],
+        'word3': rand_answer[2],
+        'word4': rand_answer[3],
+        'current_name': 'privet'
 
     })
+
+
+def get_answer(request):
+    answer = request.POST.get("answer", "Undefined")
+    true_answer = request.POST.get("true_answer", "Undefined")
+    return render(request, "learnwordseasy/your-name.html", {
+        'answer': answer,
+        'true_answer': true_answer,
+    })
+
+
+"""
+name = request.POST.get("name", "Undefined")
+age = request.POST.get("age", 1)
+return HttpResponse(f"<h2>Name: {name}  Age: {age}</h2>")
+"""
