@@ -21,67 +21,40 @@
 {% endfor %}
 
 
-<form method="post" action="{% url 'get_answer' %}" style="border: 2px solid red ">
+<form method="post" action="{% url 'get_answer' %}">
     {% csrf_token %}
-    <form method="post" action="{% url 'get_answer' %}" style="border: 2px solid blue ">
+    <form method="post" action="{% url 'get_answer' %}">
         {% csrf_token %}
-
-        {% for item in word_id %}
-            {% if num_side == 1 %}
-                <input type="hidden" name="true_answer" value="{{ item.title1 }}">
-            {% else %}
-                <input type="hidden" name="true_answer" value="{{ item.title2 }}">
-            {% endif %}
-        {% endfor %}
-
+        <input type="hidden" name="true_an" value="{{ true_ans }}">
+        <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word1 }}">
         <button CLASS="button1" type="submit">{{ word1 }}</button>
     </form>
 
-    <form method="post" action="{% url 'get_answer' %}" style="border: 2px solid blue ">
+    <form method="post" action="{% url 'get_answer' %}">
         {% csrf_token %}
-
-        {% for item in word_id %}
-            {% if num_side == 1 %}
-                <input type="hidden" name="true_answer" value="{{ item.title1 }}">
-            {% else %}
-                <input type="hidden" name="true_answer" value="{{ item.title2 }}">
-            {% endif %}
-        {% endfor %}
-
+        <input type="hidden" name="true_an" value="{{ true_ans }}">
+        <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word2 }}">
         <button CLASS="button1" type="submit">{{ word2 }}</button>
     </form>
 
-    <form method="post" action="{% url 'get_answer' %}" style="border: 2px solid blue ">
+    <form method="post" action="{% url 'get_answer' %}">
         {% csrf_token %}
-
-        {% for item in word_id %}
-            {% if num_side == 1 %}
-                <input type="hidden" name="true_answer" value="{{ item.title1 }}">
-            {% else %}
-                <input type="hidden" name="true_answer" value="{{ item.title2 }}">
-            {% endif %}
-        {% endfor %}
-
+        <input type="hidden" name="true_an" value="{{ true_ans }}">
+        <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word3 }}">
         <button CLASS="button1" type="submit">{{ word3 }}</button>
     </form>
 
-    <form method="post" action="{% url 'get_answer' %}" style="border: 2px solid blue ">
+    <form method="post" action="{% url 'get_answer' %}">
         {% csrf_token %}
-
-        {% for item in word_id %}
-            {% if num_side == 1 %}
-                <input type="hidden" name="true_answer" value="{{ item.title1 }}">
-            {% else %}
-                <input type="hidden" name="true_answer" value="{{ item.title2 }}">
-            {% endif %}
-        {% endfor %}
-
+        <input type="hidden" name="true_an" value="{{ true_ans }}">
+        <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word4 }}">
         <button CLASS="button1" type="submit">{{ word4 }}</button>
     </form>
+
 
 
 </body>

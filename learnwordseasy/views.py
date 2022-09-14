@@ -125,6 +125,8 @@ def start_test(request):
     elif int(get_for_test) == 2:
         word_id.update(for_test=3)
 
+    true_ans = word_id[0]
+
     return render(request, 'learnwordseasy/index2.html', {
         'num_side': num_side,
         'words': words,
@@ -134,17 +136,41 @@ def start_test(request):
         'word2': rand_answer[1],
         'word3': rand_answer[2],
         'word4': rand_answer[3],
-        'current_name': 'privet'
+        'current_name': 'privet',
+        'true_ans': true_ans
 
     })
 
 
 def get_answer(request):
-    answer = request.POST.get("answer", "Undefined")
-    true_answer = request.POST.get("true_answer", "Undefined")
-    return render(request, "learnwordseasy/your-name.html", {
+    answer = request.POST.get("answer", "Undefined")  # получаем ответ пользователя
+    side = request.POST.get("side", "Undefined")  # получаем на каком языке написано задаваемое слово
+    true_an = request.POST.get("true_an", "Undefined") #получаем правильный ответ
+    if int(side) == 1:  # если вопрос на русском
+        words = Words.objects.filter(title1=true_an) # находим всю инфу про слово-ответ
+        get_first_of_word = words.first() # берем его информацию
+        get_title2 = get_first_of_word.title2 # забираем перевод
+        if answer == get_title2: # если ответ правильный
+            result = "Ответ ПРАВИЛЬНЫЙ!!!!"
+        else: # в другом случаем
+            result = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
+
+    elif int(side) == 2:  # если вопрос на немецком
+        words = Words.objects.filter(title1=true_an)
+        get_first_of_word = words.first()
+        get_title2 = get_first_of_word.title1
+        if answer == get_title2:
+            result = "Ответ ПРАВИЛЬНЫЙ!!!!"
+        else:
+            result = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
+
+    return render(request, "learnwordseasy/perebivka.html", {
         'answer': answer,
-        'true_answer': true_answer,
+        'words': get_title2,
+        'true_an': true_an,
+        'side': side,
+        'result': result
+
     })
 
 
