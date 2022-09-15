@@ -21,7 +21,7 @@
 {% endfor %}
 
 
-<form method="post" action="{% url 'get_answer' %}">
+<form method="post" action="{% url 'get_answer' %}" style="border: 3px solid red">
     {% csrf_token %}
     <form method="post" action="{% url 'get_answer' %}">
         {% csrf_token %}
@@ -36,7 +36,7 @@
         <input type="hidden" name="true_an" value="{{ true_ans }}">
         <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word2 }}">
-        <button CLASS="button1" type="submit">{{ word2 }}</button>
+        <button CLASS="button2" type="submit">{{ word2 }}</button>
     </form>
 
     <form method="post" action="{% url 'get_answer' %}">
@@ -44,7 +44,7 @@
         <input type="hidden" name="true_an" value="{{ true_ans }}">
         <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word3 }}">
-        <button CLASS="button1" type="submit">{{ word3 }}</button>
+        <button CLASS="button3" type="submit">{{ word3 }}</button>
     </form>
 
     <form method="post" action="{% url 'get_answer' %}">
@@ -52,10 +52,9 @@
         <input type="hidden" name="true_an" value="{{ true_ans }}">
         <input type="hidden" name="side" value="{{ num_side }}">
         <input type="hidden" name="answer" value="{{ word4 }}">
-        <button CLASS="button1" type="submit">{{ word4 }}</button>
+        <button CLASS="button4" type="submit">{{ word4 }}</button>
     </form>
-
-
+</form>
 
 </body>
 </html>

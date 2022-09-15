@@ -129,53 +129,59 @@ def start_test(request):
 
     return render(request, 'learnwordseasy/index2.html', {
         'num_side': num_side,
-        'words': words,
+        # 'words': words,
         'word_id': word_id,
         # 'translate': list_of_translate,
         'word1': rand_answer[0],
         'word2': rand_answer[1],
         'word3': rand_answer[2],
         'word4': rand_answer[3],
-        'current_name': 'privet',
         'true_ans': true_ans
 
     })
 
 
+def check_for_test():
+    words = Words.objects.filter(for_test__in=[0, 1, 2])
+    if len(words) == 0:
+        return 1
+    else:
+        return 2
+
+
 def get_answer(request):
     answer = request.POST.get("answer", "Undefined")  # получаем ответ пользователя
     side = request.POST.get("side", "Undefined")  # получаем на каком языке написано задаваемое слово
-    true_an = request.POST.get("true_an", "Undefined") #получаем правильный ответ
+    true_an = request.POST.get("true_an", "Undefined")  # получаем правильный ответ
     if int(side) == 1:  # если вопрос на русском
-        words = Words.objects.filter(title1=true_an) # находим всю инфу про слово-ответ
-        get_first_of_word = words.first() # берем его информацию
-        get_title2 = get_first_of_word.title2 # забираем перевод
-        if answer == get_title2: # если ответ правильный
+        words = Words.objects.filter(title1=true_an)  # находим всю инфу про слово-ответ
+        get_first_of_word = words.first()  # берем его информацию
+        get_title2 = get_first_of_word.title2  # забираем перевод
+        if answer == get_title2:  # если ответ правильный
             result = "Ответ ПРАВИЛЬНЫЙ!!!!"
-        else: # в другом случаем
+        else:  # в другом случаем
             result = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
 
     elif int(side) == 2:  # если вопрос на немецком
-        words = Words.objects.filter(title1=true_an)
-        get_first_of_word = words.first()
-        get_title2 = get_first_of_word.title1
-        if answer == get_title2:
+        words = Words.objects.filter(title1=true_an)  # находим всю инфу про слово-ответ
+        get_first_of_word = words.first()  # берем его информацию
+        get_title2 = get_first_of_word.title1  # забираем
+        if answer == get_title2:  # если ответ правильный
             result = "Ответ ПРАВИЛЬНЫЙ!!!!"
-        else:
+        else:  # в другом случаем
             result = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
+
+    next = check_for_test()
 
     return render(request, "learnwordseasy/perebivka.html", {
         'answer': answer,
         'words': get_title2,
         'true_an': true_an,
         'side': side,
-        'result': result
-
+        'result': result,
+        'next': next,
     })
 
 
-"""
-name = request.POST.get("name", "Undefined")
-age = request.POST.get("age", 1)
-return HttpResponse(f"<h2>Name: {name}  Age: {age}</h2>")
-"""
+def wort_in_words(request):
+    return render(request, 'learnwordseasy/wortinword.html')

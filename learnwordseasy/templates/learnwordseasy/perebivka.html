@@ -6,5 +6,19 @@
 </head>
 <body>
 <h1>{{ result }}</h1>
+<h3>{{ next }}</h3>
+
+{% if next == 1 %}
+    <form action="{% url 'wort_in_words' %}">
+        <input type="submit" value="Некст">
+    </form>
+{% elif next == 2 %}
+    <form action="{% url 'start_test' %}">
+        <input type="submit" value="Некст">
+    </form>
+
+{% endif %}
+
+
 </body>
 </html>
