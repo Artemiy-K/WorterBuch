@@ -21,9 +21,9 @@
 {% endfor %}
 
 
-<form method="post" action="{% url 'get_answer' %}" style="border: 3px solid red">
+<form method="post" action="{% url 'get_answer' %}"  style="border: 3px solid green">
     {% csrf_token %}
-    <form method="post" action="{% url 'get_answer' %}">
+    <form method="post" action="{% url 'get_answer' %}" style="border: 3px solid red">
         {% csrf_token %}
         <input type="hidden" name="true_an" value="{{ true_ans }}">
         <input type="hidden" name="side" value="{{ num_side }}">

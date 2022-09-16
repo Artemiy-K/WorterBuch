@@ -81,3 +81,8 @@
     background-color: DarkSlateGray; /* Green */
     color: white;
 }
+
+
+form {
+    width: 300px;
+}
