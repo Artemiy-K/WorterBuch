@@ -20,14 +20,13 @@ def index(request):
 def normal_list(title):  # функция для того чтобы сделать слова в словаре в нормальном виде
     dop_list = Words.objects.values(
         title)  # Собираем все слова на выбранном языке взависимости title1 или title2 немецкий или русский
-
-
     list_word = []  # для удобства создаем список в котором будут конечные слова
     for i in range(0, len(dop_list)):
         s = dop_list[i]
         s = s[title]
         list_word.append(s)  # приводим слова в читаемую форму
     return list_word
+
 
 """
 def normal_list(bad_list, title):  # функция для того чтобы сделать слова в словаре в нормальном виде
@@ -49,7 +48,7 @@ def normal_word_form(word, title):  # функция куда передаем �
     return a
 
 
-# нам нужны рандомные числа чтобы потом их использовать как индексы и таким макаром получить рандомные ответы
+# нам нужны рандомные числа чтобы потом их использовать как индексы в списке и таким макаром получить рандомные ответы
 def create_random_number(list_word):
     r_n = []
     len_list_word = len(list_word) - 1
@@ -83,7 +82,7 @@ def random_num2(true_answer):  # Функция для создания ранд
                                         "title1")  # вызываем функ. чтобы получить правильный ответ в удобном виде
 
     list_word.remove(true_look_answer)  # удаляем правильный ответ так как может попасться такой же
-    r_n = create_random_number(list_word)  # полчаем 3 рандомных числа чтобы потом использовать как индексы
+    r_n = create_random_number(list_word)  # получаем 3 рандомных числа чтобы потом использовать как индексы
     q_transl = creating_final_answers(r_n, list_word, true_look_answer)  # создаем конечный выбор ответов
     q_transl = shuffling_of_lists(q_transl, 5)  # мешаем
 
@@ -98,27 +97,26 @@ def random_num1(true_answer):  # Функция для создания ранд
 
     list_word.remove(
         true_look_answer)  # удаляем его чтобы не было повторений в ответах, ведь он может выскочить повторно
-    r_n = create_random_number(list_word)  # полчаем 3 рандомных числа чтобы потом использовать как индексы
+    r_n = create_random_number(list_word)  # получаем 3 рандомных числа чтобы потом использовать как индексы
     q_words = creating_final_answers(r_n, list_word, true_look_answer)  # создаем финальный список ответов
     q_words = shuffling_of_lists(q_words, 5)  # мешаем
 
     return q_words
 
 
-def get_info_about_word(title1_of_word):
-    word_id = Words.objects.filter(title1=title1_of_word)  # забираем всю инфу об этом слове
+def get_info_about_word(title1_of_word): # забираем всю инфу из бд об этом слове
+    word_id = Words.objects.filter(title1=title1_of_word)
     get_first_of_word = word_id.first()
     return get_first_of_word
 
 
 def start_test(request):
-    global col
     list_of_translate = []  # создаем список если карточка будет стороной на русском
     words = Words.objects.filter(
         for_test__in=[0, 1, 2])  # берем слова из бд только те которые были показаны меньше 3 раз
 
     num_side = random.randint(1, 2)  # рандомно выбераем какой стороной будет наша карточка
-    list_of_words = []  # создаем пустой список для слов
+    list_of_words = []
     for word in words:
         list_of_words.append(word.title1)  # добавляем все слова в читаемом виде
 
@@ -128,11 +126,10 @@ def start_test(request):
     get_for_test = get_info_about_word(q_word).for_test  # забираем его значение чтобы потом поменять
 
     word_id = Words.objects.filter(title1=q_word)
-    # list_of_translate.remove(get_first_of_word.title2)
     if num_side == 1:  # если карточка первой стороной то ответы будут немецкими
         rand_answer = random_num1(word_id)  # передаем правильное слово
-    else:
-        rand_answer = random_num2(word_id)  # в другом случае на русском
+    else: # в другом случае на русском
+        rand_answer = random_num2(word_id)  # передаем правильное слово
 
     # далее мы меняем значение чтобы показывали 1 слово не более 3 раз
     if int(get_for_test) == 0:
@@ -142,7 +139,7 @@ def start_test(request):
     elif int(get_for_test) == 2:
         word_id.update(for_test=3)
 
-    true_ans = word_id[0]  # берем правильное слово и передаем чтобы понять какое из них ответов оно
+    true_ans = word_id[0]  # берем правильное слово и передаем чтобы понять какой из ответов правильный
 
     return render(request, 'learnwordseasy/index2.html', {
         'num_side': num_side,
@@ -175,14 +172,14 @@ def get_answer(request):  # Проверка Правильности слова
         get_title_word = get_info_about_word(true_an).title2  # забираем перевод
         if answer == get_title_word:  # если ответ правильный
             resultt = "Ответ ПРАВИЛЬНЫЙ!!!!"
-        else:  # в другом случаем
+        else:
             resultt = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
 
     elif int(side) == 2:  # если вопрос на немецком берем его информацию
         get_title_word = get_info_about_word(true_an).title1  # забираем
         if answer == get_title_word:  # если ответ правильный
             resultt = "Ответ ПРАВИЛЬНЫЙ!!!!"
-        else:  # в другом случаем
+        else:
             resultt = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
 
     next_q = check_for_test()  # смотрим не пора ли уже менять тест ведь слова могут закончиться
@@ -196,39 +193,37 @@ def get_answer(request):  # Проверка Правильности слова
         'next': next_q,
     })
 
-
+# функция чтобы вытянуть из бд пример применения слова
 def get_example(word):
-    num_of_example = random.randint(1, 3)
+    num_of_example = random.randint(1, 3) # рандомное число
     if num_of_example == 1:
         word_info = get_info_about_word(word).example1
     if num_of_example == 2:
         word_info = get_info_about_word(word).example2
     if num_of_example == 3:
         word_info = get_info_about_word(word).example3
-    return word_info
+    return word_info # и вытягиваем один из примеров
 
 
 def wort_in_words(request):
-    words = Words.objects.filter(for_test__in=[3])
-    categories = Category.objects.all()
+    words = Words.objects.filter(for_test__in=[3]) # берем все допустимые слова
 
-    list_of_words = normal_list("title1")  # создаем пустой список для слов
+    list_of_words = []
     for word in words:
         list_of_words.append(word.title1)  # добавляем все слова в читаемом виде
 
-    list_of_words = shuffling_of_lists(list_of_words, 4)
+    list_of_words = shuffling_of_lists(list_of_words, 4) # мешаем
 
-    first_word = Words.objects.get(title1=list_of_words[0])
-    category_of_word = first_word.category
-    first_word = first_word.title1
-    get_example_word = get_example(first_word)
+    first_word = Words.objects.get(title1=list_of_words[0]) # получаем инфу о слове
+    category_of_word = first_word.category # получаем его категорию чтобы понять есть ли артикль
+    first_word = first_word.title1 # получаем его название на немецком
+    get_example_word = get_example(first_word) # вызываем его пример применнения
 
-    if str(category_of_word) == "Substantiv":
+    if str(category_of_word) == "Substantiv": # если сущ значит убераем артикль
         first_word = first_word[3:]
 
     return render(request, 'learnwordseasy/wortinword.html', {
         'words': first_word,
-        'categories': categories,
         'category_of_word': category_of_word,
         'get_example_word': get_example_word
     })
