@@ -20,6 +20,8 @@ def index(request):
 def normal_list(title):  # функция для того чтобы сделать слова в словаре в нормальном виде
     dop_list = Words.objects.values(
         title)  # Собираем все слова на выбранном языке взависимости title1 или title2 немецкий или русский
+
+
     list_word = []  # для удобства создаем список в котором будут конечные слова
     for i in range(0, len(dop_list)):
         s = dop_list[i]
@@ -37,6 +39,7 @@ def normal_list(bad_list, title):  # функция для того чтобы �
         list_word.append(s)  # приводим слова в читаемую форму
     return list_word
 """
+
 
 # преобразование правильного слова из <QuerySet [<Word: Fragen>]> =>> в "Fragen"
 def normal_word_form(word, title):  # функция куда передаем само слово + title который определяет язык слова
@@ -102,13 +105,17 @@ def random_num1(true_answer):  # Функция для создания ранд
     return q_words
 
 
+def get_info_about_word(title1_of_word):
+    word_id = Words.objects.filter(title1=title1_of_word)  # забираем всю инфу об этом слове
+    get_first_of_word = word_id.first()
+    return get_first_of_word
+
+
 def start_test(request):
     global col
     list_of_translate = []  # создаем список если карточка будет стороной на русском
     words = Words.objects.filter(
         for_test__in=[0, 1, 2])  # берем слова из бд только те которые были показаны меньше 3 раз
-
-
 
     num_side = random.randint(1, 2)  # рандомно выбераем какой стороной будет наша карточка
     list_of_words = []  # создаем пустой список для слов
@@ -118,10 +125,9 @@ def start_test(request):
     list_of_words = shuffling_of_lists(list_of_words, 2)  # рандомно перемешиваем
     q_word = list_of_words[0]  # берем первое слово
 
-    word_id = Words.objects.filter(title1=q_word)  # забираем всю инфу об этом слове
-    get_first_of_word = word_id.first()  # берем его фирст
-    get_for_test = get_first_of_word.for_test  # забираем его значение чтобы потом поменять
+    get_for_test = get_info_about_word(q_word).for_test  # забираем его значение чтобы потом поменять
 
+    word_id = Words.objects.filter(title1=q_word)
     # list_of_translate.remove(get_first_of_word.title2)
     if num_side == 1:  # если карточка первой стороной то ответы будут немецкими
         rand_answer = random_num1(word_id)  # передаем правильное слово
@@ -165,25 +171,21 @@ def get_answer(request):  # Проверка Правильности слова
     answer = request.POST.get("answer", "Undefined")  # получаем ответ пользователя
     side = request.POST.get("side", "Undefined")  # получаем на каком языке написано задаваемое слово
     true_an = request.POST.get("true_an", "Undefined")  # получаем правильный ответ
-    if int(side) == 1:  # если вопрос на русском
-        words = Words.objects.filter(title1=true_an)  # находим всю инфу про слово-ответ
-        get_first_of_word = words.first()  # берем его информацию
-        get_title_word = get_first_of_word.title2  # забираем перевод
+    if int(side) == 1:  # если вопрос на русском # берем его информацию
+        get_title_word = get_info_about_word(true_an).title2  # забираем перевод
         if answer == get_title_word:  # если ответ правильный
             resultt = "Ответ ПРАВИЛЬНЫЙ!!!!"
         else:  # в другом случаем
             resultt = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
 
-    elif int(side) == 2:  # если вопрос на немецком
-        words = Words.objects.filter(title1=true_an)  # находим всю инфу про слово-ответ
-        get_first_of_word = words.first()  # берем его информацию
-        get_title_word = get_first_of_word.title1  # забираем
+    elif int(side) == 2:  # если вопрос на немецком берем его информацию
+        get_title_word = get_info_about_word(true_an).title1  # забираем
         if answer == get_title_word:  # если ответ правильный
             resultt = "Ответ ПРАВИЛЬНЫЙ!!!!"
         else:  # в другом случаем
             resultt = "ПОКА Ответ ПРАВИЛЬНЫЙ ТЫ ДИБИЛ!!!!"
 
-    next_q = check_for_test() # смотрим не пора ли уже менять тест ведь слова могут закончиться
+    next_q = check_for_test()  # смотрим не пора ли уже менять тест ведь слова могут закончиться
 
     return render(request, "learnwordseasy/perebivka.html", {
         'answer': answer,
@@ -195,12 +197,22 @@ def get_answer(request):  # Проверка Правильности слова
     })
 
 
+def get_example(word):
+    num_of_example = random.randint(1, 3)
+    if num_of_example == 1:
+        word_info = get_info_about_word(word).example1
+    if num_of_example == 2:
+        word_info = get_info_about_word(word).example2
+    if num_of_example == 3:
+        word_info = get_info_about_word(word).example3
+    return word_info
+
+
 def wort_in_words(request):
-    l = ''
     words = Words.objects.filter(for_test__in=[3])
     categories = Category.objects.all()
 
-    list_of_words = []  # создаем пустой список для слов
+    list_of_words = normal_list("title1")  # создаем пустой список для слов
     for word in words:
         list_of_words.append(word.title1)  # добавляем все слова в читаемом виде
 
@@ -209,6 +221,8 @@ def wort_in_words(request):
     first_word = Words.objects.get(title1=list_of_words[0])
     category_of_word = first_word.category
     first_word = first_word.title1
+    get_example_word = get_example(first_word)
+
     if str(category_of_word) == "Substantiv":
         first_word = first_word[3:]
 
@@ -216,4 +230,5 @@ def wort_in_words(request):
         'words': first_word,
         'categories': categories,
         'category_of_word': category_of_word,
+        'get_example_word': get_example_word
     })
