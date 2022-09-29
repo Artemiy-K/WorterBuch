@@ -1,13 +1,31 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="{% static 'learnwordseasy/style.css' %}">
 </head>
 <body>
 <h1>{{ words }}</h1>
-<h1>{{ categories }}</h1>
-<h1>{{ category_of_word }}</h1>
+<h2>{{ letter }}</h2>
 <h2>{{ get_example_word }}</h2>
+
+<form method="post" action="{% url 'verification' %}">
+    {% csrf_token %}
+    {% for letters2 in word_in_list %}
+        {% if letters2 not in letter %}
+            <input type="text" name="{{ forloop.counter }}">
+        {% else %}
+            {{ letters2 }}
+        {% endif %}
+    {% endfor %}
+    <br>
+    <input type="hidden" name="word_in_list" value="{{ word_in_list }}">
+    <input type="hidden" name="letter" value="{{ letter }}">
+    <input type="hidden" name="proper_word" value="{{ words }}">
+    <button type="submit">Проверить</button>
+</form>
+
 </body>
 </html>

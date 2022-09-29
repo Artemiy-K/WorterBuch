@@ -104,7 +104,7 @@ def random_num1(true_answer):  # Функция для создания ранд
     return q_words
 
 
-def get_info_about_word(title1_of_word): # забираем всю инфу из бд об этом слове
+def get_info_about_word(title1_of_word):  # забираем всю инфу из бд об этом слове
     word_id = Words.objects.filter(title1=title1_of_word)
     get_first_of_word = word_id.first()
     return get_first_of_word
@@ -128,7 +128,7 @@ def start_test(request):
     word_id = Words.objects.filter(title1=q_word)
     if num_side == 1:  # если карточка первой стороной то ответы будут немецкими
         rand_answer = random_num1(word_id)  # передаем правильное слово
-    else: # в другом случае на русском
+    else:  # в другом случае на русском
         rand_answer = random_num2(word_id)  # передаем правильное слово
 
     # далее мы меняем значение чтобы показывали 1 слово не более 3 раз
@@ -193,37 +193,114 @@ def get_answer(request):  # Проверка Правильности слова
         'next': next_q,
     })
 
+
 # функция чтобы вытянуть из бд пример применения слова
 def get_example(word):
-    num_of_example = random.randint(1, 3) # рандомное число
+    num_of_example = random.randint(1, 3)  # рандомное число
     if num_of_example == 1:
         word_info = get_info_about_word(word).example1
-    if num_of_example == 2:
+    elif num_of_example == 2:
         word_info = get_info_about_word(word).example2
-    if num_of_example == 3:
+    else:
         word_info = get_info_about_word(word).example3
-    return word_info # и вытягиваем один из примеров
+    return word_info  # и вытягиваем один из примеров
+
+
+def character_count_leave(word):
+    if len(word) < 4:
+        character_leave = 2
+    elif len(word) >= 4 and len(word) <= 6:
+        character_leave = 3
+    else:
+        character_leave = int(len(word)) // 2 + 1
+
+    return character_leave
+
+
+def add_word_inlist(word):
+    word_in_list = []
+    for i in range(0, len(word)):
+        word_in_list.append(word[i])
+    return word_in_list
+
+
+def dropping_letters(word):
+    letters = []
+    word_in_list = add_word_inlist(word)
+    count_of_letter = character_count_leave(word)
+
+    while len(letters) != count_of_letter:
+        true_len_word = len(word_in_list) - 1
+        num_letter = random.randint(0, true_len_word)
+        if num_letter not in letters:
+            letters.append(num_letter)
+            word_in_list.remove(word_in_list[num_letter])
+
+    letters.sort()
+
+    return word_in_list, letters
 
 
 def wort_in_words(request):
-    words = Words.objects.filter(for_test__in=[3]) # берем все допустимые слова
+    words = Words.objects.filter(for_test__in=[3])  # берем все допустимые слова
 
     list_of_words = []
     for word in words:
         list_of_words.append(word.title1)  # добавляем все слова в читаемом виде
 
-    list_of_words = shuffling_of_lists(list_of_words, 4) # мешаем
+    list_of_words = shuffling_of_lists(list_of_words, 4)  # мешаем
 
-    first_word = Words.objects.get(title1=list_of_words[0]) # получаем инфу о слове
-    category_of_word = first_word.category # получаем его категорию чтобы понять есть ли артикль
-    first_word = first_word.title1 # получаем его название на немецком
-    get_example_word = get_example(first_word) # вызываем его пример применнения
+    first_word = Words.objects.get(title1=list_of_words[0])  # получаем инфу о слове
+    category_of_word = first_word.category  # получаем его категорию чтобы понять есть ли артикль
+    first_word = first_word.title1  # получаем его название на немецком
+    get_example_word = get_example(first_word)  # вызываем его пример применнения
 
-    if str(category_of_word) == "Substantiv": # если сущ значит убераем артикль
-        first_word = first_word[3:]
+    if str(category_of_word) == "Substantiv":  # если сущ значит убераем артикль
+        first_word = first_word[4:]
+
+    list_with_letter = dropping_letters(first_word)
+    word_in_list = add_word_inlist(first_word)
 
     return render(request, 'learnwordseasy/wortinword.html', {
         'words': first_word,
-        'category_of_word': category_of_word,
-        'get_example_word': get_example_word
+        'letter': list_with_letter[0],
+        'get_example_word': get_example_word,
+        'word_in_list': word_in_list,
+    })
+
+
+def verification(request):
+    input_list = []
+    letter_answer = request.POST.get("letter_answer", "Undefined")
+    word_in_list = request.POST.get("word_in_list", "Undefined")
+    len_list = len(word_in_list) - 1
+    for i in range(0, len_list):
+        s = request.POST.get(str(i), "Undefined")
+        if s != "Undefined":
+            input_list.append(s.lower())
+
+    letter = request.POST.get("letter", "Undefined").replace('[', '').replace(']', '').replace(',', '').replace('\'',
+                                                                                                                '').lower().split(
+        " ")
+
+    word_in_list = word_in_list.replace('[', '').replace(']', '').replace(',', '').replace('\'', '').lower().split(" ")
+
+    input_list = [j for i in [input_list, letter] for j in i]
+
+    for item in word_in_list:
+        if int(word_in_list.count(item)) != int(input_list.count(item)):
+            input_list.append(item)
+
+    if sorted(word_in_list) == sorted(input_list):
+        result = "Всё правильно молодец!"
+    else:
+        result = 'ты дебил не правильно'
+
+
+
+    return render(request, 'learnwordseasy/perebivka2.html', {
+        'answer': input_list,
+        'answer2': letter,  # word_in_list
+        'answ3': word_in_list,
+        'result': result
     })
